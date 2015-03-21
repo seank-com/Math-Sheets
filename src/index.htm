@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My Math Assignment</title>
+		<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/south-street/jquery-ui.css" type="text/css" rel="Stylesheet" />
+		<style>
+		@media all {
+			@page { margin: 0.5in; }
+
+			table { padding: 0; }
+			tr { padding: 0; }
+			td { padding: 0; }
+
+			html, body, table#worksheet { height: 100%; width: 100%; margin: auto; padding: 0; border: none; }
+			table#worksheet { border-spacing:0; border-collapse:collapse; }
+
+			table.problem { margin: auto; vertical-align: top; border:none; padding:0; border-spacing:0; border-collapse:collapse; }
+			td.vproblem { font: 22pt Times;  height: 1.85in; vertical-align: top; }
+			td.hproblem { font: 30pt Times;  height: 0.99in; vertical-align: middle; }
+
+			td.wa { text-align: right; }
+			td.fa { text-align: left; }
+			td.wo { text-align: right; }
+			td.fo { text-align: left; }
+			td.wm { text-align: right; border-bottom:thin solid black; }
+			td.fm { text-align: left; border-bottom:thin solid black; }
+			td.dwo { text-align: right; border-left:thin solid black;}
+
+			div#configbutton {
+				font: 20pt Times;
+				background-color: #00dd00;
+				border-radius: 10px;
+				box-shadow: -5px -5px 2px #00aa00 inset;
+				cursor: pointer;
+				position: absolute;
+				padding: 15px;
+				left:45%;
+				top:0;
+			}
+
+			span.blank { text-decoration:underline; }
+
+			fieldset { padding:0; border:0; }
+			select { width:95%; }
+		}
+		@media print {
+			div , div * { display: none !important; }
+		}
+		</style>
+	</head>
+	<body>
+	<table id=worksheet>
+	</table>
+	<div id=configbutton>Configure</div>
+	<div id=configdialog title="Customize Math Worksheet">
+		<form>
+		<fieldset>
+			<label for="skill">Skill</label>
+			<select name="skill" id="skill">
+				<option value="addition">Addition</option>
+				<option value="subtraction">Subtraction</option>
+				<option value="multiplication">Multiplication</option>
+				<option value="division">Division</option>
+			</select>
+			<label for="level">Level</label>
+			<select name="level" id="level">
+			</select>
+		</fieldset>
+		</form>
+	</div>
+	<script id="layout4x5" type="text/template">
+	  <tr><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td></tr>
+	  <tr><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td></tr>
+	  <tr><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td></tr>
+	  <tr><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td></tr>
+	  <tr><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td><td class=vproblem></td></tr>
+	</script>
+	<script id="layout3x10" type="text/template">
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	  <tr><td class=hproblem></td><td class=hproblem></td><td class=hproblem></td></tr>
+	</script>
+	<script id="verticalproblem" type="text/template">
+		<table class=problem>
+			<tr><td class=wo>{{wpop1}}</td><td class=fo>{{fpop1}}</td></tr>
+			<tr><td class=wm>{{op}} {{wpop2}}</td><td class=fm>{{fpop2}}</td></tr>
+			<tr><td class=wo>{{wpans}}</td><td class=fo>{{fpans}}</td></tr>
+		</table>
+	</script>
+	<script id="longdivisionproblem" type="text/template">
+		<table class=problem>
+			<tr><td class=wo>&nbsp;</td><td class=wm>&nbsp;</td></tr>
+			<tr><td class=wo>{{divisor}}</td><td class=dwo>{{dividend}}</td></tr>
+		</table>
+	</script>
+	<script id="horizontalproblem" type="text/template">
+		<table class=problem><tr><td>{{wpop1}} {{op}} {{wpop2}} = {{wpans}}</td></tr></table>
+	</script>
+	<script id="blankline" type="text/template">
+		<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	</script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+<!-- @ifdef DEBUG -->
+    <script src="addition.js"></script>
+    <script src="subtraction.js"></script>
+    <script src="multiplication.js"></script>
+    <script src="division.js"></script>
+    <script src="unittests.js"></script>
+		<script src="math.js"></script>
+<!-- @endif -->
+<!-- @ifdef PROD -->
+    <script src="math.min.js"></script>
+<!-- @endif -->
+    </body>
+</html>
