@@ -7,150 +7,148 @@
 */
 
 /*properties
-  canDoHorizontal, getLevelDescription, getNextProblem,
-  renderNextHorizontalProblem, renderNextVerticalProblem, setLevel,
-
-  _nBlankPosition, _nDigitsDivisor, _nDigitsQuotient, _nRemainder, _nFind,
-  _oRepeats, _sDividend, _sDivisor, _sQuotient, _sRemainder,
+  canDoHorizontal, getLevelDescription,
+  renderNextHorizontalProblem, renderNextVerticalProblem,
+  setLevel,
 
   floor, hasOwnProperty, html, pow, random, replace
 */
 
-function Division() {
+function createDivisionManager() {
   'use strict';
 
-  this._nDigitsQuotient = 0;
-  this._nDigitsDivisor = 0;
-  this._nRemainder = 0;
-  this._nFind = 0;
-  this._nBlankPosition = 0;
+  var _digitsQuotient = 0,
+    _digitsDivisor = 0,
+    _remainderSetting = 0,
+    _find = 0,
+    _blankPosition = 0,
+    _repeats = {},
+    _quotient = '',
+    _divisor = '',
+    _dividend = '',
+    _remainder = '',
+    _getNextProblem = function () {
+      var happy = false,
+        key = '',
+        i = 0;
 
-  this._oRepeats = {};
+      while (!happy) {
+        i = Math.pow(10, _digitsQuotient - 1);
+        _quotient = String(Math.floor(Math.random() * 9 * i) + i);
+        i = Math.pow(10, _digitsDivisor - 1);
+        _divisor = String(Math.floor(Math.random() * 9 * i) + i);
 
-  this._sQuotient = '';
-  this._sDivisor = '';
-  this._sDividend = '';
-  this._sRemainder = '';
-
-  this.getNextProblem = function () {
-    var fHappy, sKey, i;
-
-    fHappy = false;
-    while (!fHappy) {
-      i = Math.pow(10, this._nDigitsQuotient - 1);
-      this._sQuotient = String(Math.floor(Math.random() * 9 * i) + i);
-      i = Math.pow(10, this._nDigitsDivisor - 1);
-      this._sDivisor = String(Math.floor(Math.random() * 9 * i) + i);
-
-      if (this._nRemainder === 2) {
-        this._sRemainder = String(Math.floor(Math.random() * (+this._sDivisor - 1) + 1));
-      } else {
-        this._sRemainder = '0';
-      }
-
-      this._sDividend = String(((+this._sQuotient) * (+this._sDivisor)) + (+this._sRemainder));
-
-      sKey = '(' + this._sQuotient + ')(' + this._sDivisor + ')';
-
-      if (this._oRepeats.hasOwnProperty(sKey)) {
-        fHappy = false;
-      } else {
-        this._oRepeats[sKey] = sKey;
-        fHappy = true;
-
-        if (this._nFind === 2) {
-          this._nBlankPosition = Math.floor(Math.random() * 3) + 1;
+        if (_remainderSetting === 2) {
+          _remainder = String(Math.floor(Math.random() * (+_divisor - 1) + 1));
         } else {
-          this._nBlankPosition = 3;
+          _remainder = '0';
+        }
+
+        _dividend = String(((+_quotient) * (+_divisor)) + (+_remainder));
+
+        key = '(' + _quotient + ')(' + _divisor + ')';
+
+        if (_repeats.hasOwnProperty(key)) {
+          happy = false;
+        } else {
+          _repeats[key] = key;
+          happy = true;
+
+          if (_find === 2) {
+            _blankPosition = Math.floor(Math.random() * 3) + 1;
+          } else {
+            _blankPosition = 3;
+          }
         }
       }
-    }
-  };
+    };
 
-  this.setLevel = function (nLevel) {
-    var nFindMax, nRemainderMax;
+  return {
+    setLevel: function (nLevel) {
+      var findMax = 0,
+        remainderMax = 0;
 
-    this._oRepeats = {};
+      _repeats = {};
 
-    for (this._nDigitsQuotient = 1; this._nDigitsQuotient <= 3; this._nDigitsQuotient += 1) {
-      for (this._nDigitsDivisor = 1; this._nDigitsDivisor <= 2; this._nDigitsDivisor += 1) {
-        nFindMax = 1;
-        if (this._nDigitsQuotient === 1 && this._nDigitsDivisor === 1) {
-          nFindMax = 2;
-        }
-
-        for (this._nFind = 1; this._nFind <= nFindMax; this._nFind += 1) {
-          nRemainderMax = 2;
-          if (this._nDigitsQuotient === 1 && this._nDigitsDivisor === 1) {
-            nRemainderMax = 1;
+      for (_digitsQuotient = 1; _digitsQuotient <= 3; _digitsQuotient += 1) {
+        for (_digitsDivisor = 1; _digitsDivisor <= 2; _digitsDivisor += 1) {
+          findMax = 1;
+          if (_digitsQuotient === 1 && _digitsDivisor === 1) {
+            findMax = 2;
           }
 
-          for (this._nRemainder = 1; this._nRemainder <= nRemainderMax; this._nRemainder += 1) {
-            nLevel -= 1;
-            if (nLevel === 0) {
-              return true;
+          for (_find = 1; _find <= findMax; _find += 1) {
+            remainderMax = 2;
+            if (_digitsQuotient === 1 && _digitsDivisor === 1) {
+              remainderMax = 1;
+            }
+
+            for (_remainderSetting = 1; _remainderSetting <= remainderMax; _remainderSetting += 1) {
+              nLevel -= 1;
+              if (nLevel === 0) {
+                return true;
+              }
             }
           }
         }
       }
+      return false;
+    },
+    canDoHorizontal: function () {
+      return (_digitsQuotient === 1 && _digitsDivisor === 1);
+    },
+    getLevelDescription: function () {
+      var result = '';
+
+      result = 'Division with ' + _digitsQuotient + ' digit quotients and ' + _digitsDivisor + ' digit divisors';
+      if (_remainderSetting === 2) {
+        result += ' with remainders';
+      }
+
+      if (_find === 2) {
+        result += ' with missing operands';
+      }
+
+      return result;
+    },
+    renderNextHorizontalProblem: function (element) {
+      var operand1 = '',
+        operand2 = '',
+        answer = '',
+        line = '';
+
+      _getNextProblem();
+
+      operand1 = _dividend;
+      operand2 = _divisor;
+      answer = _quotient;
+      line = $('#blankline').html();
+
+      switch (_blankPosition) {
+      case 1:
+        operand1 = line;
+        break;
+      case 2:
+        operand2 = line;
+        break;
+      case 3:
+        answer = line;
+        break;
+      }
+
+      $(element).html($('#horizontalproblem').html()
+        .replace('{{wpop1}}', operand1)
+        .replace('{{wpop2}}', operand2)
+        .replace('{{op}}', '&divide;')
+        .replace('{{wpans}}', answer));
+    },
+    renderNextVerticalProblem: function (element) {
+
+      _getNextProblem();
+
+      $(element).html($('#longdivisionproblem').html()
+        .replace('{{divisor}}', _divisor)
+        .replace('{{dividend}}', _dividend));
     }
-    return false;
-  };
-
-  this.canDoHorizontal = function () {
-    return (this._nDigitsQuotient === 1 && this._nDigitsDivisor === 1);
-  };
-
-  this.getLevelDescription = function () {
-    var sResult;
-
-    sResult = 'Division with ' + this._nDigitsQuotient + ' digit quotients and ' + this._nDigitsDivisor + ' digit divisors';
-    if (this._nRemainder === 2) {
-      sResult += ' with remainders';
-    }
-
-    if (this._nFind === 2) {
-      sResult += ' with missing operands';
-    }
-
-    return sResult;
-  };
-
-  this.renderNextHorizontalProblem = function (oElement) {
-    var sOperand1, sOperand2, sAnswer, sLine;
-
-    this.getNextProblem();
-
-    sOperand1 = this._sDividend;
-    sOperand2 = this._sDivisor;
-    sAnswer = this._sQuotient;
-    sLine = $('#blankline').html();
-
-    switch (this._nBlankPosition) {
-    case 1:
-      sOperand1 = sLine;
-      break;
-    case 2:
-      sOperand2 = sLine;
-      break;
-    case 3:
-      sAnswer = sLine;
-      break;
-    }
-
-    $(oElement).html($('#horizontalproblem').html()
-      .replace('{{wpop1}}', sOperand1)
-      .replace('{{wpop2}}', sOperand2)
-      .replace('{{op}}', '&divide;')
-      .replace('{{wpans}}', sAnswer));
-  };
-
-  this.renderNextVerticalProblem = function (oElement) {
-
-    this.getNextProblem();
-
-    $(oElement).html($('#longdivisionproblem').html()
-      .replace('{{divisor}}', this._sDivisor)
-      .replace('{{dividend}}', this._sDividend));
   };
 }

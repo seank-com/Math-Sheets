@@ -3,29 +3,34 @@
 */
 
 /*globals
-  $, document, Addition, Subtraction, Multiplication, Division, runAllUnitTests
+  $, document,
+
+  createAdditionManager, createSubtractionManager,
+  createMultiplicationManager, createDivisionManager,
+  runAllUnitTests
 */
 
 $(document).ready(function () {
   'use strict';
 
-  var oSkill, nLevel;
+  var _skill = {},
+    _level = 0;
 
   function renderWorksheet() {
-    if (oSkill.canDoHorizontal()) {
+    if (_skill.canDoHorizontal()) {
 
       $('#worksheet').html($('#layout3x10').html());
 
       /*jslint unparam: true */
       $('#worksheet td').each(function (idx, el) {
-        oSkill.renderNextHorizontalProblem(el);
+        _skill.renderNextHorizontalProblem(el);
       });
     } else {
       $('#worksheet').html($('#layout4x5').html());
 
       /*jslint unparam: true */
       $('#worksheet td').each(function (idx, el) {
-        oSkill.renderNextVerticalProblem(el);
+        _skill.renderNextVerticalProblem(el);
       });
     }
   }
@@ -58,38 +63,37 @@ $(document).ready(function () {
   });
 
   $('#skill').change(function () {
-    var i, oLevel;
+    var i = 1,
+      level = $('#level');
 
     switch ($('#skill option').filter(':selected').val()) {
     case 'addition':
-      oSkill = new Addition();
+      _skill = createAdditionManager();
       break;
     case 'subtraction':
-      oSkill = new Subtraction();
+      _skill = createSubtractionManager();
       break;
     case 'multiplication':
-      oSkill = new Multiplication();
+      _skill = createMultiplicationManager();
       break;
     case 'division':
-      oSkill = new Division();
+      _skill = createDivisionManager();
       break;
     }
 
-    oLevel = $('#level');
-    oLevel.html('');
-    i = 1;
-    while (oSkill.setLevel(i)) {
-      oLevel.append('<option value="' + i + '">' + oSkill.getLevelDescription() + '</option>');
+    level.html('');
+    while (_skill.setLevel(i)) {
+      level.append('<option value="' + i + '">' + _skill.getLevelDescription() + '</option>');
       i += 1;
     }
-    oLevel.val(1).change();
+    level.val(1).change();
   });
 
   $('#level').change(function () {
 
-    nLevel = +($('#level option').filter(':selected').val());
+    _level = +($('#level option').filter(':selected').val());
 
-    oSkill.setLevel(nLevel);
+    _skill.setLevel(_level);
     renderWorksheet();
   });
 
