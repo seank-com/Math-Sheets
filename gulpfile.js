@@ -8,7 +8,11 @@ var gulp = require('gulp'),
   clean = require('gulp-clean'),
   merge = require('gulp-merge'),
   uglify = require('gulp-uglify'),
-  _scriptGlob = [
+  _jslintGlob = [
+    'gulpfile.js',
+    'src/*.js'
+  ],
+  _scriptsGlob = [
     'src/addition.js',
     'src/subtraction.js',
     'src/multiplication.js',
@@ -25,23 +29,21 @@ gulp.task('clean', function () {
     pipe(clean());
 });
 
-gulp.task('build', function () {
+gulp.task('jslint', function () {
   "use strict";
 
-  return gulp.src('gulpfile.js').
+  return gulp.src(_jslintGlob).
     pipe(jslint());
 });
 
-gulp.task('scripts', ['clean'], function () {
+gulp.task('scripts', ['clean', 'jslint'], function () {
   "use strict";
 
   return merge(
-    gulp.src(_scriptGlob).
-      pipe(jslint()),
-    gulp.src(_scriptGlob).
+    gulp.src(_scriptsGlob).
       pipe(preprocess({context: { DEBUG: true}})).
       pipe(gulp.dest('build/debug/')),
-    gulp.src(_scriptGlob).
+    gulp.src(_scriptsGlob).
       pipe(concat('math.js')).
       pipe(preprocess({context: { PROD: true}})).
       pipe(gulp.dest('build/prod/')).
@@ -73,4 +75,10 @@ gulp.task('markup', ['clean'], function () {
   );
 });
 
-gulp.task('default', ['build', 'scripts', 'markup']);
+gulp.task('watch', function () {
+  "use strict";
+
+  gulp.watch(_jslintGlob, ['jslint']);
+});
+
+gulp.task('default', ['jslint', 'scripts', 'markup']);
